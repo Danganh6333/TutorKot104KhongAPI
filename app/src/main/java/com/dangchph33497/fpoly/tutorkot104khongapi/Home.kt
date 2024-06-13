@@ -41,12 +41,18 @@ class Home : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            var DanhSach by remember {
+                mutableStateOf(flowerList)
+            }
             var selectedFlower by remember {
                 mutableStateOf<Flower?>(null)
             }
+            var updatedFlower by remember {
+                mutableStateOf<Flower?>(null)
+            }
             LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-                items(flowerList.size) { index ->
-                    val flower = flowerList.get(index)
+                items(DanhSach.size) { index ->
+                    val flower = DanhSach.get(index)
                     Column {
                         AsyncImage(
                             model = flower.url,
@@ -65,8 +71,37 @@ class Home : ComponentActivity() {
                         }) {
                             Text(text = "Chi Tiết")
                         }
+                        Button(onClick = {
+                            DanhSach = DanhSach.toMutableList().apply {
+                                remove(flower)
+                            }
+
+                        }) {
+                            Text(text = "Xóa")
+                        }
+                        Button(onClick = {
+                           updatedFlower = flower
+                        }) {
+                            Text(text = "Sửa")
+                        }
                     }
                 }
+            }
+            updatedFlower?.let {
+                AlertDialog(
+                    onDismissRequest = {
+                        updatedFlower = null
+                    }, confirmButton = {
+
+                    },
+                    text = {
+                        Column {
+                        }
+                    }
+                    , title = {
+                        Text(text = "Dialog Cập Nhật")
+                    }
+                )
             }
             selectedFlower?.let {
                 //Khai báo dialog
